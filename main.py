@@ -36,3 +36,6 @@ result = pd.read_sql_query(query, connection)
 print(result)
 
 connection.close()
+
+
+print ("checked.")
