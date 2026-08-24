@@ -26,19 +26,19 @@ print("Data has been successfully imported into the SQLite database.")
 connection = sqlite3.connect(DB_PATH)
 
 query = """
+WITH average_grade AS (
+    SELECT AVG(grade) AS avg_grade
+    FROM courses
+)
+
 SELECT
-    students.student_id,
-    students.name,
-    COUNT(courses.course_id) AS course_count,
-    ROUND(AVG(courses.grade), 2) AS average_grade
-FROM students
-LEFT JOIN courses
-    ON students.student_id = courses.student_id
-GROUP BY
-    students.student_id,
-    students.name
-HAVING COUNT(courses.course_id) >= 2
-ORDER BY course_count DESC
+    c.student_id,
+    c.course,
+    c.grade
+FROM courses AS c
+CROSS JOIN average_grade AS a
+WHERE c.grade < a.avg_grade
+ORDER BY c.grade
 """
 
 result = pd.read_sql_query(query, connection)
