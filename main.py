@@ -25,10 +25,20 @@ print("Data has been successfully imported into the SQLite database.")
 
 connection = sqlite3.connect(DB_PATH)
 
-query = """select student_id, name, city
-from students
-where city = 'Erlangen'
-order by name
+query = """
+SELECT
+    students.student_id,
+    students.name,
+    COUNT(courses.course_id) AS course_count,
+    ROUND(AVG(courses.grade), 2) AS average_grade
+FROM students
+LEFT JOIN courses
+    ON students.student_id = courses.student_id
+GROUP BY
+    students.student_id,
+    students.name
+HAVING COUNT(courses.course_id) >= 2
+ORDER BY course_count DESC
 """
 
 result = pd.read_sql_query(query, connection)
@@ -38,4 +48,3 @@ print(result)
 connection.close()
 
 
-print ("checked.")
