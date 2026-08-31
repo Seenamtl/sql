@@ -30,13 +30,12 @@ SELECT
     student_id,
     course,
     grade,
-    RANK() OVER (
+    ROW_NUMBER() OVER (
+        PARTITION BY student_id
         ORDER BY grade
-    ) AS rank,
-    DENSE_RANK() OVER (
-        ORDER BY grade
-    ) AS dense_rank
+    ) AS course_rank
 FROM courses
+ORDER BY student_id, course_rank
 """
 
 result = pd.read_sql_query(query, connection)
