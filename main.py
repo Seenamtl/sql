@@ -30,12 +30,12 @@ SELECT
     student_id,
     course,
     grade,
-    ROW_NUMBER() OVER (
-        ORDER BY grade
-    ) AS row_number,
     RANK() OVER (
         ORDER BY grade
-    ) AS rank
+    ) AS rank,
+    DENSE_RANK() OVER (
+        ORDER BY grade
+    ) AS dense_rank
 FROM courses
 """
 
