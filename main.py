@@ -26,16 +26,25 @@ print("Data has been successfully imported into the SQLite database.")
 connection = sqlite3.connect(DB_PATH)
 
 query = """
+WITH ranked_courses AS (
+    SELECT
+        student_id,
+        course,
+        grade,
+        ROW_NUMBER() OVER (
+            PARTITION BY student_id
+            ORDER BY grade
+        ) AS course_rank
+    FROM courses
+)
+
 SELECT
     student_id,
     course,
-    grade,
-    ROW_NUMBER() OVER (
-        PARTITION BY student_id
-        ORDER BY grade
-    ) AS course_rank
-FROM courses
-ORDER BY student_id, course_rank
+    grade
+FROM ranked_courses
+WHERE course_rank = 1
+ORDER BY student_id
 """
 
 result = pd.read_sql_query(query, connection)
